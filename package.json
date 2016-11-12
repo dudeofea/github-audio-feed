@@ -1,0 +1,28 @@
+{
+  "name": "github-audio-feed",
+  "version": "1.0.0",
+  "description": "sound localized github commits for the 2016 Fall HackED",
+  "scripts": {
+    "start": "node_modules/watchify/bin/cmd.js main.js -o bundle.js & node_modules/node-sass/bin/node-sass style.scss -wo . --source-map . & node_modules/live-server/live-server.js . --ignore=\"style.scss,style.css.map\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dudeofea/github-audio-feed.git"
+  },
+  "keywords": [
+    "3d sound",
+    "github"
+  ],
+  "author": "Denis Lachance",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/dudeofea/github-audio-feed/issues"
+  },
+  "homepage": "https://github.com/dudeofea/github-audio-feed#readme",
+  "devDependencies": {
+    "domready": "^1.0.8",
+    "live-server": "^1.0.0",
+    "node-sass": "^3.8.0",
+    "watchify": "^3.7.0"
+  }
+}

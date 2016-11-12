@@ -1,0 +1,157 @@
+//CSS reset
+html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,label,legend,p,blockquote,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}body{line-height:1;color:black;background:white;}:focus{outline:0;}table{border-collapse:collapse;border-spacing:0;}caption,th,td{text-align:left;font-weight:normal;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}ol,ul{list-style:none;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}blockquote:before,blockquote:after,q:before,q:after{content:"";}blockquote,q{quotes:"" "";}abbr,acronym{border:0;}
+
+//mixins
+@mixin border-radius($top, $right, $bottom, $left) {
+	-webkit-border-top-left-radius: $top;
+	-webkit-border-top-right-radius: $right;
+	-webkit-border-bottom-right-radius: $bottom;
+	-webkit-border-bottom-left-radius: $left;
+	-moz-border-radius-topleft: $top;
+	-moz-border-radius-topright: $right;
+	-moz-border-radius-bottomright: $bottom;
+	-moz-border-radius-bottomleft: $left;
+	border-top-left-radius: $top;
+	border-top-right-radius: $right;
+	border-bottom-right-radius: $bottom;
+	border-bottom-left-radius: $left;
+}
+@mixin transform($args){
+	-webkit-transform: $args;
+	-moz-tranform: $args;
+	-ms-transform: $args;
+	-o-transform: $args;
+	transform: $args;
+}
+@mixin translate($x, $y) {
+	@include transform(translate($x, $y));
+}
+@mixin noselect(){
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+$meter: 50px;	//reality to virtual conversion
+
+//colors
+$floor-color: brown;
+$background: darken(brown, 10);
+$table-color: black;
+$wall-color: black;
+
+html, body {
+	background-color: $background;
+}
+
+.rotate {
+	@include transform(rotate(90deg));
+}
+
+.floorplan {
+}
+
+.main-room {
+	height: 26 * $meter;
+	width: 14.5 * $meter;
+	background-color: $floor-color;
+	position: relative;
+	.left-wall {
+		height: 8 * $meter;
+		width: 1.5 * $meter;
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: $background;
+	}
+	.right-wall {
+		height: 4 * $meter;
+		width: 1.5 * $meter;
+		position: absolute;
+		top: 12 * $meter;
+		right: 0;
+		background-color: $background;
+	}
+}
+
+//
+//	TABLES
+//
+.big-table {
+	width: 2.5 * $meter;
+	height: 1.2 * $meter;
+	background-color: $table-color;
+	position: absolute;
+}
+#big-table-1 {
+	top: 0.7 * $meter;
+	left: 3 * $meter;
+}
+#big-table-2 {
+	top: 1 * $meter;
+	left: 8.5 * $meter;
+}
+#big-table-3 {
+	top: 4 * $meter;
+	left: 2 * $meter;
+}
+
+.round-table {
+	width: 0.8 * $meter;
+	height: 0.8 * $meter;
+	border-radius: 50%;
+	background-color: $table-color;
+	position: absolute;
+}
+#round-table-1 {
+	top: 7 * $meter;
+	left: 1.7 * $meter;
+}
+#round-table-2 {
+	top: 0.1 * $meter;
+	left: 7.5 * $meter;
+}
+#round-table-3 {
+	top: 5 * $meter;
+	left: 5.5 * $meter;
+}
+
+//
+//	WALLS
+//
+.short-wall {
+	border-radius: 4px;
+	padding: 2px 0px;
+	width: 4px;
+	height: 1 * $meter;
+	background-color: $wall-color;
+	position: absolute;
+}
+#wall-1 {
+	left: 8.5 * $meter;
+	height: 6 * $meter;
+}
+#wall-2 {
+	left: 7.5 * $meter;
+	top: 1.5 * $meter;
+	height: 2 * $meter;
+}
+#wall-3 {
+	left: 6.5 * $meter;
+	top: 2.5 * $meter;
+	height: 3.5 * $meter;
+}
+#wall-4 {
+	left: 5.5 * $meter;
+	top: 5 * $meter;
+	height: 2 * $meter;
+}
+#wall-5 {
+	left: 4.5 * $meter;
+	top: 6 * $meter;
+	height: 2 * $meter;
+}
