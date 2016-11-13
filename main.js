@@ -18,17 +18,31 @@ var cumulativeOffset = function(element) {
     };
 };
 
-//TODO: create a looping sound source from a given table
+//G, A, Bb, C, D, Eb, F
+var g_minor_432 = [384.87, 432.00, 457.69, 513.74, 576.65, 610.94, 685.76, 769.74, 864.00, 915.38, 1027.47, 1153.30, 1221.88, 1371.51, 1539.47, 1728.00];
+var color_classes = ['orange', 'green', 'red', 'blue'];
+
+//TODO: create a sound based on commit info and play
 function play_commit(commit){
+	//clear colors from element
+	var new_list = [];
+	for (var i = 0; i < color_classes.length; i++) {
+		commit.elem.classList.remove(color_classes[i]);
+	}
+	//get position
 	var xy = cumulativeOffset(commit.elem);
 	var rect = commit.elem.getBoundingClientRect();
 	xy.x += rect.width/2;
 	xy.y += rect.height/2;
-	console.log(xy, commit);
-	var pos_sample = new PositionSample(xy, 440);
+	//get frequency (based on sha1)
+	var n = parseInt(commit.sha[0], 16);
+	console.log(xy, commit, n);
+	var pos_sample = new PositionSample(xy, g_minor_432[n]);
+	//color it
+	commit.elem.classList.add(color_classes[n % 4]);
 }
 
-//TODO: load all commits of the day and attach to table element
+//load all commits of the day and attach to table element
 function load_commits(tables, callback){
 	var all_commits = [];
 	var start_date = new Date(2016, 10, 12, 12, 0, 0, 0);	//start of hackathon
@@ -72,6 +86,7 @@ function load_commits(tables, callback){
 											continue;
 										}
 										commits[k]['date'] = commit_date;
+										commits[k]['timestamp'] = commit_date - start_date;
 										commits[k]['elem'] = tables[table_i];
 										hashes.push(commits[k].sha);
 										all_commits.push(commits[k]);
@@ -93,8 +108,12 @@ function play_commits(tables, new_origin, new_dir){
 	context.listener.setPosition(new_origin.x, new_origin.y, 0);
 	context.listener.setOrientation(new_dir.x,new_dir.y,0, 0,0,-1);
 	load_commits(tables, function(commits){
-		console.log(new_origin);
-		play_commit(commits[0]);
+		for (var i = 0; i < commits.length; i++) {
+			console.log(commits[i].timestamp)
+			setTimeout(function(ind){
+				play_commit(commits[ind]);
+			}, commits[i].timestamp / 1000, i);
+		}
 	});
 }
 
@@ -140,8 +159,8 @@ domready(function(){
 			dir.x *= mag;
 			dir.y *= mag;
 			dir.z *= mag;
-			play_commits(tables, user_pos, dir);
 			this.onclick = null;
+			play_commits(tables, user_pos, dir);
 			//set message
 			popup.innerHTML = 'Enjoy :D';
 			popup.className = 'popup hide';
@@ -154,13 +173,25 @@ function PositionSample(position, freq) {
 	this.isPlaying = false;
 
 	//create random data in audio buffer
+	var fadeCount = context.sampleRate * 0.5;	//fade time
 	var frameCount = context.sampleRate * 4.0; //4s of audio
-	var audio_buffer = context.createBuffer(1, frameCount, context.sampleRate);
+	var audio_buffer = context.createBuffer(1, 2*fadeCount + frameCount, context.sampleRate);
 	var audio_frames = audio_buffer.getChannelData(0);
 	var sin_scale = freq * 2 * Math.PI / context.sampleRate;
+	//first do a fade in
+	for (var i = 0; i < fadeCount; i++) {
+		//audio data needs to be between -1.0 and 1.0
+		audio_frames[i] = (i/fadeCount) * 0.8 * Math.sin(i * sin_scale);
+	}
+	//then play the sample
 	for (var i = 0; i < frameCount; i++) {
 		//audio data needs to be between -1.0 and 1.0
-		audio_frames[i] = 0.5 * Math.sin(i * sin_scale);
+		audio_frames[fadeCount + i] = 0.8 * Math.sin(i * sin_scale);
+	}
+	//then a fade out
+	for (var i = 0; i < fadeCount; i++) {
+		//audio data needs to be between -1.0 and 1.0
+		audio_frames[fadeCount + frameCount + i] = ((fadeCount-i)/fadeCount) * 0.8 * Math.sin(i * sin_scale);
 	}
 	this.buffer = audio_buffer;
 	this.setPosition(position);

@@ -58,6 +58,21 @@ html, body {
 	@include transform(rotate(90deg));
 }
 
+.big-table, .small-table{
+	&.orange {
+		background-color: $music-orange;
+	}
+	&.green {
+		background-color: $music-green;
+	}
+	&.red {
+		background-color: $music-red;
+	}
+	&.blue {
+		background-color: $music-blue;
+	}
+}
+
 .floorplan {
 	padding: 2 * $meter;
 }
@@ -121,6 +136,7 @@ html, body {
 	height: 1.2 * $meter;
 	background-color: $table-color;
 	position: absolute;
+	transition: 0.5s ease all;
 }
 #big-table-1 {
 	top: 0.7 * $meter;
@@ -144,6 +160,7 @@ html, body {
 	height: 0.8 * $meter;
 	background-color: $table-color;
 	position: absolute;
+	transition: 0.5s ease all;
 }
 #small-table-1 {
 	top: 18.25 * $meter;
