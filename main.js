@@ -208,12 +208,12 @@ function PositionSample(position, freq, duration) {
 	//then play the sample
 	for (var i = 0; i < frameCount; i++) {
 		//audio data needs to be between -1.0 and 1.0
-		audio_frames[fadeCount + i] = 0.8 * Math.sin(i * sin_scale);
+		audio_frames[fadeCount + i] = 0.8 * Math.sin((fadeCount + i) * sin_scale);
 	}
 	//then a fade out
 	for (var i = 0; i < fadeCount; i++) {
 		//audio data needs to be between -1.0 and 1.0
-		audio_frames[fadeCount + frameCount + i] = ((fadeCount-i)/fadeCount) * 0.8 * Math.sin(i * sin_scale);
+		audio_frames[fadeCount + frameCount + i] = ((fadeCount-i)/fadeCount) * 0.8 * Math.sin((fadeCount + frameCount + i) * sin_scale);
 	}
 	this.buffer = audio_buffer;
 	this.setPosition(position);
