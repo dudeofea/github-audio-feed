@@ -44,6 +44,12 @@ $background: #1f1e1e;
 $table-color: black;
 $wall-color: black;
 
+//music colors
+$music-green: #157F1F;
+$music-orange: #CF5C36;
+$music-red: #EF233C;
+$music-blue: #226CE0;
+
 html, body {
 	background-color: $background;
 }
@@ -53,7 +59,7 @@ html, body {
 }
 
 .floorplan {
-	padding: 1.5 * $meter;
+	padding: 2 * $meter;
 }
 
 .main-room {
@@ -78,6 +84,33 @@ html, body {
 		right: 0;
 		background-color: $background;
 	}
+}
+
+.popup {
+	position: fixed;
+	bottom: 30px;
+	left: 50%;
+	@include transform(translateX(-50%));
+	background-color: white;
+	border-radius: 10px;
+	padding: 20px;
+	font-size: 18px;
+	font-family: monospace;
+	width: 400px;
+	text-align: center;
+	transition: 2s cubic-bezier(0.99, 0.01, 0.58, 1) all;
+	&.hide {
+		opacity: 0;
+	}
+}
+
+.spot {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-left: 0.2 * $meter solid transparent;
+	border-right: 0.2 * $meter solid transparent;
+	border-bottom: 0.2 * $meter solid white;
 }
 
 //

@@ -2,114 +2,175 @@ var domready = require("domready");
 
 //globals
 var context = new AudioContext();
-var origin = null;
+var token = gitToken.token;
+
+var cumulativeOffset = function(element) {
+    var top = 0, left = 0;
+    do {
+        top += element.offsetTop  || 0;
+        left += element.offsetLeft || 0;
+        element = element.offsetParent;
+    } while(element);
+
+    return {
+		x: left,
+        y: top
+    };
+};
 
 //TODO: create a looping sound source from a given table
-function create_audio_source(el){
-	var rect = el.getBoundingClientRect();
-	var xy = {x: rect.left + rect.width/2, y: rect.top + rect.height/2};
-	var pos_sample = new PositionSample(xy);
+function play_commit(commit){
+	var xy = cumulativeOffset(commit.elem);
+	var rect = commit.elem.getBoundingClientRect();
+	xy.x += rect.width/2;
+	xy.y += rect.height/2;
+	console.log(xy, commit);
+	var pos_sample = new PositionSample(xy, 440);
 }
 
-//TODO: setup all audio loops from all surrounding repos
-function refresh_audio(new_origin){
-	//first run through
-	if(origin == null){
-		//just pick on table as a source for now
-		create_audio_source(document.getElementById('big-table-1'));
+//TODO: load all commits of the day and attach to table element
+function load_commits(tables, callback){
+	var all_commits = [];
+	var start_date = new Date(2016, 10, 12, 12, 0, 0, 0);	//start of hackathon
+	//to return just once
+	var callback_count = 0;
+	var callback_ind = 0;
+	var internal_callback = function(){
+		callback_ind++;
+		if(callback_count == callback_ind){
+			//sort by date, return
+			all_commits.sort(function(a, b){
+				if(a['date'] > b['date'])
+					return 1;
+				if(a['date'] < b['date'])
+					return -1;
+				return 0;
+			});
+			callback(all_commits);
+		}
 	}
-	origin = new_origin;
-	//TODO: set listener position
+	//for all project tables at hackathon
+	for (var i = 0; i < tables.length; i++) {
+		if(tables[i].attributes['data-url']){
+			setTimeout(function(url, table_i){
+				var hashes = [];
+				//remove github link and just leave /:author/:repo:
+				url = url.substring(url.indexOf("github.com/")+11);
+				//get all branches of repo
+				var branch_url = "https://api.github.com/repos/"+url+"/branches?access_token="+token;
+				$.get(branch_url, function(branches){
+					callback_count += branches.length;
+					for (var j = 0; j < branches.length; j++) {
+						setTimeout(function(sha){
+							//get all commits with this sha
+							var commits_url = "https://api.github.com/repos/"+url+"/commits?access_token="+token+"&sha="+sha;
+							$.get(commits_url, function(commits){
+								for (var k = 0; k < commits.length; k++) {
+									var commit_date = new Date(commits[k]['commit']['author']['date']);
+									if(commit_date > start_date){
+										if(hashes.indexOf(commits[k].sha) >= 0){
+											continue;
+										}
+										commits[k]['date'] = commit_date;
+										commits[k]['elem'] = tables[table_i];
+										hashes.push(commits[k].sha);
+										all_commits.push(commits[k]);
+									}
+								}
+								internal_callback();
+							});
+						}, 0, branches[j].commit.sha);
+					}
+				});
+			}, 0, tables[i].attributes['data-url'].value, i);
+		}
+	}
 }
 
-//on click, set table as origin point for sound
-function set_user_origin(e){
-	var rect = this.getBoundingClientRect();
-	var xy = {x: rect.left + rect.width/2, y: rect.top + rect.height/2};
-	context.listener.setPosition(xy.x, xy.y, 0);
-	context.listener.setOrientation(0,-1,0, 0,0,-1);
-	refresh_audio(xy);
+//TODO: play through all commits of the day
+function play_commits(tables, new_origin, new_dir){
+	//set our position
+	context.listener.setPosition(new_origin.x, new_origin.y, 0);
+	context.listener.setOrientation(new_dir.x,new_dir.y,0, 0,0,-1);
+	load_commits(tables, function(commits){
+		console.log(new_origin);
+		play_commit(commits[0]);
+	});
 }
 
 //where everything is good to go
 domready(function(){
 	var room = document.getElementsByClassName('main-room')[0];
+	var tables = [];
 	for (var i = 0; i < room.childNodes.length; i++) {
 		var cla = room.childNodes[i].className;
 		//get all tables
-		if(cla != null && cla.indexOf("table")){
-			room.childNodes[i].onclick = set_user_origin;
+		if(cla != null && cla.indexOf("table") >= 0){
+			tables.push(room.childNodes[i]);
+		}
+	}
+	//get user's position
+	var room_rect = room.getBoundingClientRect();
+	var popup = document.getElementById('popup');
+	room.onclick = function(e){
+		if(e.target.className != 'main-room'){
+			return;
+		}
+		//add a marker
+		var el = document.createElement('div');
+		el.className = 'spot';
+		el.style.left= (e.layerX)+'px';
+		el.style.top = (e.layerY)+'px';
+		room.appendChild(el);
+		var user_pos = {x: e.pageX, y: e.pageY};
+		//change message
+		popup.innerHTML = 'Please click where you were facing';
+		//TODO: get user's orientation
+		this.onclick = function(e){
+			var second_point = {x: e.pageX, y: e.pageY};
+			if(second_point == user_pos){
+				return;
+			}
+			//rotate the element
+			var rads = Math.atan2(second_point.x - user_pos.x, user_pos.y - second_point.y);
+			el.style.transform = 'rotate('+rads+'rad)';
+			var dir = {x: second_point.x - user_pos.x, y: second_point.y - user_pos.y, z: 0};
+			//normalize & start audio
+			var mag = 1/Math.sqrt(dir.x*dir.x + dir.y*dir.y +dir.z*dir.z);
+			dir.x *= mag;
+			dir.y *= mag;
+			dir.z *= mag;
+			play_commits(tables, user_pos, dir);
+			this.onclick = null;
+			//set message
+			popup.innerHTML = 'Enjoy :D';
+			popup.className = 'popup hide';
 		}
 	}
 });
 
-//Helper class used by HTML5Rocks
-function BufferLoader(context, urlList, callback) {
-  this.context = context;
-  this.urlList = urlList;
-  this.onload = callback;
-  this.bufferList = new Array();
-  this.loadCount = 0;
-}
-
-BufferLoader.prototype.loadBuffer = function(url, index) {
-  // Load buffer asynchronously
-  var request = new XMLHttpRequest();
-  request.open("GET", url, true);
-  request.responseType = "arraybuffer";
-
-  var loader = this;
-
-  request.onload = function() {
-    // Asynchronously decode the audio file data in request.response
-    loader.context.decodeAudioData(
-      request.response,
-      function(buffer) {
-        if (!buffer) {
-          alert('error decoding file data: ' + url);
-          return;
-        }
-        loader.bufferList[index] = buffer;
-        if (++loader.loadCount == loader.urlList.length)
-          loader.onload(loader.bufferList);
-      },
-      function(error) {
-        console.error('decodeAudioData error', error);
-      }
-    );
-  }
-
-  request.onerror = function() {
-    alert('BufferLoader: XHR error');
-  }
-
-  request.send();
-}
-
-BufferLoader.prototype.load = function() {
-  for (var i = 0; i < this.urlList.length; ++i)
-  this.loadBuffer(this.urlList[i], i);
-}
-
 // Super version: http://chromium.googlecode.com/svn/trunk/samples/audio/simple.html
-function PositionSample(position) {
-	var urls = ['position.wav'];
-	var sample = this;
+function PositionSample(position, freq) {
 	this.isPlaying = false;
 
-	// Load the sample to pan around.
-	var loader = new BufferLoader(context, urls, function(buffers) {
-		sample.buffer = buffers[0];
-		sample.setPosition(position);
-	});
-	loader.load();
+	//create random data in audio buffer
+	var frameCount = context.sampleRate * 4.0; //4s of audio
+	var audio_buffer = context.createBuffer(1, frameCount, context.sampleRate);
+	var audio_frames = audio_buffer.getChannelData(0);
+	var sin_scale = freq * 2 * Math.PI / context.sampleRate;
+	for (var i = 0; i < frameCount; i++) {
+		//audio data needs to be between -1.0 and 1.0
+		audio_frames[i] = 0.5 * Math.sin(i * sin_scale);
+	}
+	this.buffer = audio_buffer;
+	this.setPosition(position);
 }
 
 PositionSample.prototype.play = function() {
 	// Hook up the audio graph for this sample.
 	var source = context.createBufferSource();
 	source.buffer = this.buffer;
-	source.loop = true;
+	source.loop = false;
 	//create an omnidirectional audio source
 	var panner = context.createPanner();
 	panner.coneOuterGain = 0;
