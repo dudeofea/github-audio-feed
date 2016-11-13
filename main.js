@@ -21,6 +21,7 @@ var cumulativeOffset = function(element) {
 //G, A, Bb, C, D, Eb, F
 var g_minor_432 = [384.87, 432.00, 457.69, 513.74, 576.65, 610.94, 685.76, 769.74, 864.00, 915.38, 1027.47, 1153.30, 1221.88, 1371.51, 1539.47, 1728.00];
 var color_classes = ['orange', 'green', 'red', 'blue'];
+var used_tables = [];
 
 //TODO: create a sound based on commit info and play
 function play_commit(commit){
@@ -36,10 +37,17 @@ function play_commit(commit){
 	xy.y += rect.height/2;
 	//get frequency (based on sha1)
 	var n = parseInt(commit.sha[0], 16);
-	console.log(xy, commit, n);
+	var duration = 4.5;
 	var pos_sample = new PositionSample(xy, g_minor_432[n]);
 	//color it
 	commit.elem.classList.add(color_classes[n % 4]);
+	used_tables[commit.table_i]++;
+	setTimeout(function(ind, cla){
+		used_tables[ind]--;
+		if(used_tables[ind] <= 0){
+			commit.elem.classList.remove(cla);
+		}
+	}, duration * 1000, commit.table_i, color_classes[n % 4]);
 }
 
 //load all commits of the day and attach to table element
@@ -62,6 +70,10 @@ function load_commits(tables, callback){
 			});
 			callback(all_commits);
 		}
+	}
+	//set all tables to not used
+	for (var i = 0; i < tables.length; i++) {
+		used_tables.push(0);
 	}
 	//for all project tables at hackathon
 	for (var i = 0; i < tables.length; i++) {
@@ -88,6 +100,7 @@ function load_commits(tables, callback){
 										commits[k]['date'] = commit_date;
 										commits[k]['timestamp'] = commit_date - start_date;
 										commits[k]['elem'] = tables[table_i];
+										commits[k]['table_i'] = table_i;
 										hashes.push(commits[k].sha);
 										all_commits.push(commits[k]);
 									}
@@ -109,7 +122,6 @@ function play_commits(tables, new_origin, new_dir){
 	context.listener.setOrientation(new_dir.x,new_dir.y,0, 0,0,-1);
 	load_commits(tables, function(commits){
 		for (var i = 0; i < commits.length; i++) {
-			console.log(commits[i].timestamp)
 			setTimeout(function(ind){
 				play_commit(commits[ind]);
 			}, commits[i].timestamp / 1000, i);
