@@ -39,7 +39,7 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
 $meter: 50px;	//reality to virtual conversion
 
 //colors
-$floor-color: brown;
+$floor: url(wood_planks.jpg);
 $background: darken(brown, 10);
 $table-color: black;
 $wall-color: black;
@@ -58,7 +58,8 @@ html, body {
 .main-room {
 	height: 26 * $meter;
 	width: 14.5 * $meter;
-	background-color: $floor-color;
+	background: $floor;
+	background-size: 300px;
 	position: relative;
 	.left-wall {
 		height: 8 * $meter;
@@ -154,4 +155,44 @@ html, body {
 	left: 4.5 * $meter;
 	top: 6 * $meter;
 	height: 2 * $meter;
+}
+#wall-6 {
+	left: 7 * $meter;
+	top: 5.5 * $meter;
+	height: 5 * $meter;
+}
+#wall-7 {
+	left: 4.5 * $meter;
+	top: 8 * $meter;
+	height: 12 * $meter;
+}
+#wall-8 {
+	left: 9.5 * $meter;
+	top: 8 * $meter;
+	height: 2.5 * $meter;
+}
+#wall-9 {
+	left: 9.5 * $meter;
+	top: 11.5 * $meter;
+	height: 2.5 * $meter;
+}
+#wall-10 {
+	left: 9.5 * $meter;
+	top: 15 * $meter;
+	height: 5 * $meter;
+}
+#wall-11 {
+	left: 7 * $meter;
+	top: 9.5 * $meter;
+	height: 5 * $meter;
+}
+#wall-12 {
+	left: 7 * $meter;
+	top: 13 * $meter;
+	height: 5 * $meter;
+}
+#wall-13 {
+	left: 7 * $meter;
+	top: 15.5 * $meter;
+	height: 4.5 * $meter;
 }
