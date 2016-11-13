@@ -40,7 +40,7 @@ $meter: 50px;	//reality to virtual conversion
 
 //colors
 $floor: url(wood_planks.jpg);
-$background: darken(brown, 10);
+$background: #1f1e1e;
 $table-color: black;
 $wall-color: black;
 
@@ -53,6 +53,7 @@ html, body {
 }
 
 .floorplan {
+	padding: 1.5 * $meter;
 }
 
 .main-room {
