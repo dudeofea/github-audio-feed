@@ -154,6 +154,14 @@ html, body {
 	top: 23.5 * $meter;
 	left: 1.2 * $meter;
 }
+#big-table-5 {
+	top: 9.5 * $meter;
+	left: 5.5 * $meter;
+}
+#big-table-6 {
+	top: 13.3 * $meter;
+	left: 5.5 * $meter;
+}
 
 .small-table {
 	width: 1.5 * $meter;
@@ -169,6 +177,14 @@ html, body {
 #small-table-2 {
 	top: 12 * $meter;
 	left: 1 * $meter;
+}
+#small-table-3 {
+	top: 17 * $meter;
+	left: 5 * $meter;
+}
+#small-table-4 {
+	top: 17 * $meter;
+	left: 7.5 * $meter;
 }
 
 .round-table {
@@ -265,6 +281,16 @@ html, body {
 	left: 7 * $meter;
 	top: 15.5 * $meter;
 	height: 4.5 * $meter;
+}
+#wall-14 {
+	left: 5.25 * $meter;
+	top: 19.25 * $meter;
+	height: 1.5 * $meter;
+}
+#wall-15 {
+	left: 8.75 * $meter;
+	top: 19.25 * $meter;
+	height: 1.5 * $meter;
 }
 //YOU MUST CONSTRUCT ADDITIONAL CLASSES
 
