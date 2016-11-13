@@ -101,7 +101,7 @@ html, body {
 	}
 }
 
-.popup {
+.popup, .time {
 	position: fixed;
 	bottom: 30px;
 	left: 50%;
@@ -117,6 +117,12 @@ html, body {
 	&.hide {
 		opacity: 0;
 	}
+}
+
+.time {
+	width: 200px;
+	bottom: 50%;
+	@include transform(translate(-50%, 50%));
 }
 
 .spot {
