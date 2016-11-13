@@ -100,6 +100,25 @@ html, body {
 	top: 4 * $meter;
 	left: 2 * $meter;
 }
+#big-table-4 {
+	top: 23.5 * $meter;
+	left: 1.2 * $meter;
+}
+
+.small-table {
+	width: 1.5 * $meter;
+	height: 0.8 * $meter;
+	background-color: $table-color;
+	position: absolute;
+}
+#small-table-1 {
+	top: 18.25 * $meter;
+	left: 1 * $meter;
+}
+#small-table-2 {
+	top: 12 * $meter;
+	left: 1 * $meter;
+}
 
 .round-table {
 	width: 0.8 * $meter;
@@ -197,3 +216,22 @@ html, body {
 	height: 4.5 * $meter;
 }
 //YOU MUST CONSTRUCT ADDITIONAL CLASSES
+
+.detached-wall {
+	width: 2.5 * $meter;
+	height: 0.3 * $meter;
+	background-color: $wall-color;
+	position: absolute;
+}
+#dwall-1 {
+	top: 21.5 * $meter;
+	left: 0.3 * $meter;
+}
+#dwall-2 {
+	top: 15.5 * $meter;
+	left: 0.3 * $meter;
+}
+#dwall-3 {
+	top: 9 * $meter;
+	left: 0.3 * $meter;
+}

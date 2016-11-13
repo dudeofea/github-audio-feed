@@ -1,7 +1,22 @@
 var domready = require("domready");
 
-//use the body as our main game window
-domready(function(){ init_audio_feed(); });
+//on click, set table as origin point for sound
+function set_user_origin(e){
+	console.log("clicked", this);
+}
+
+//where everything is good to go
+domready(function(){
+	//var pos_sample = new PositionSample(el, context);
+	var room = document.getElementsByClassName('main-room')[0];
+	for (var i = 0; i < room.childNodes.length; i++) {
+		var cla = room.childNodes[i].className;
+		//get all tables
+		if(cla != null && cla.indexOf("table")){
+			room.childNodes[i].onclick = set_user_origin;
+		}
+	}
+});
 
 var context = new AudioContext();
 
@@ -252,10 +267,4 @@ PositionSample.prototype.changeAngle = function(angle) {
 //  console.log(angle);
   // Compute the vector for this angle.
   this.panner.setOrientation(Math.cos(angle), -Math.sin(angle), 1);
-};
-
-audio_feed = {
-	start: function(layout){
-		//var pos_sample = new PositionSample(el, context);
-	}
 };
