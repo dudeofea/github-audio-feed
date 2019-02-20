@@ -2,8 +2,6 @@
 
 Experience the aural sensation of hearing live commits around you
 
-Demo: http://denislachance.com/github-audio-feed/
-
 # About
 
 This was made for the November 2016 Startup Edmonton Hackathon, really just as something to do while watching everyone else work on their projects. I figured I might as well save myself the effort of looking by simply listening
